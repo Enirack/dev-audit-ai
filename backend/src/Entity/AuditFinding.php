@@ -14,6 +14,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Table(name: 'audit_findings')]
 #[ORM\Index(name: 'idx_finding_severity', fields: ['severity'])]
 #[ORM\Index(name: 'idx_finding_category', fields: ['category'])]
+#[ORM\Index(name: 'idx_finding_rule_id', fields: ['ruleId'])]
 class AuditFinding
 {
     #[ORM\Id]
@@ -25,6 +26,9 @@ class AuditFinding
     #[ORM\ManyToOne(targetEntity: Audit::class, inversedBy: 'findings')]
     #[ORM\JoinColumn(name: 'audit_id', nullable: false, onDelete: 'CASCADE')]
     private Audit $audit;
+
+    #[ORM\Column(length: 128)]
+    private string $ruleId;
 
     #[ORM\Column(length: 32, enumType: FindingCategory::class)]
     private FindingCategory $category;
@@ -65,6 +69,7 @@ class AuditFinding
 
     public function __construct(
         Audit $audit,
+        string $ruleId,
         FindingCategory $category,
         FindingSeverity $severity,
         string $title,
@@ -73,6 +78,7 @@ class AuditFinding
     ) {
         $this->id = Uuid::v7();
         $this->audit = $audit;
+        $this->ruleId = $ruleId;
         $this->category = $category;
         $this->severity = $severity;
         $this->title = $title;
@@ -89,6 +95,11 @@ class AuditFinding
     public function getAudit(): Audit
     {
         return $this->audit;
+    }
+
+    public function getRuleId(): string
+    {
+        return $this->ruleId;
     }
 
     public function getCategory(): FindingCategory

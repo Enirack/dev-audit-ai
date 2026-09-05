@@ -36,6 +36,34 @@ services:
     App\:
         resource: '../src/'
 
+    _instanceof:
+        App\StaticAnalysis\Rule\RuleInterface:
+            tags: ['app.static_analysis_rule']
+        App\StaticAnalysis\Rule\RepositoryRuleInterface:
+            tags: ['app.static_analysis_repository_rule']
+
+    App\StaticAnalysis\Analyzer\JavaScriptAnalyzer:
+        arguments:
+            $rules: !tagged_iterator app.static_analysis_rule
+    App\StaticAnalysis\Analyzer\TypeScriptAnalyzer:
+        arguments:
+            $rules: !tagged_iterator app.static_analysis_rule
+    App\StaticAnalysis\Analyzer\PhpAnalyzer:
+        arguments:
+            $rules: !tagged_iterator app.static_analysis_rule
+    App\StaticAnalysis\Analyzer\PythonAnalyzer:
+        arguments:
+            $rules: !tagged_iterator app.static_analysis_rule
+
+    App\StaticAnalysis\StaticAnalysisEngine:
+        arguments:
+            $analyzers:
+                - '@App\StaticAnalysis\Analyzer\JavaScriptAnalyzer'
+                - '@App\StaticAnalysis\Analyzer\TypeScriptAnalyzer'
+                - '@App\StaticAnalysis\Analyzer\PhpAnalyzer'
+                - '@App\StaticAnalysis\Analyzer\PythonAnalyzer'
+            $repositoryRules: !tagged_iterator app.static_analysis_repository_rule
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     App\Service\Scanning\ScannerConfig:
