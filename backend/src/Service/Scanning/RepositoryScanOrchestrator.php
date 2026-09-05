@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Scanning;
 
+use App\Audit\AuditService;
 use App\Entity\RepositoryInventory;
 use App\Entity\RepositoryScan;
 use App\Exception\GitHubApiException;
@@ -14,14 +15,17 @@ use App\Exception\UnsafeArchiveException;
 use App\Service\GitHub\GitHubApiClient;
 use App\Service\GitHub\GitHubIngestionService;
 use App\Service\GitHub\GitHubUrlParser;
+use App\StaticAnalysis\RepositoryAnalysisContext;
+use App\StaticAnalysis\StaticAnalysisEngine;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Drives a RepositoryScan through its lifecycle: pending -> cloning -> completed/failed.
- *
- * Phase 2 only performs ingestion (cloning); the "scanning" status is set but
- * not yet followed by an actual scan — that lands in Phase 3.
+ * Drives a RepositoryScan through its full lifecycle:
+ * pending -> cloning -> scanning -> completed/failed, producing an
+ * inventory (Phase 3) and an audit with findings and scores (Phases 4-5)
+ * along the way, all while the ingested workspace still exists (it is
+ * always cleaned up afterward, per Phase 2's requirement).
  */
 final class RepositoryScanOrchestrator
 {
@@ -30,6 +34,8 @@ final class RepositoryScanOrchestrator
         private readonly GitHubApiClient $apiClient,
         private readonly GitHubIngestionService $ingestionService,
         private readonly RepositoryScanner $repositoryScanner,
+        private readonly StaticAnalysisEngine $staticAnalysisEngine,
+        private readonly AuditService $auditService,
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
     ) {
@@ -68,6 +74,10 @@ final class RepositoryScanOrchestrator
                 );
                 $this->entityManager->persist($inventory);
                 $scan->attachInventory($inventory);
+
+                $context = new RepositoryAnalysisContext($workspace->root, $result);
+                $findings = $this->staticAnalysisEngine->analyze($context);
+                $this->auditService->createAudit($scan, $findings);
 
                 $scan->markCompleted();
             } finally {

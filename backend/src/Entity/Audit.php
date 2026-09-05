@@ -27,6 +27,9 @@ class Audit
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $summary = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $overallScore = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $generatedAt;
 
@@ -65,6 +68,16 @@ class Audit
     public function setSummary(?string $summary): void
     {
         $this->summary = $summary;
+    }
+
+    public function getOverallScore(): ?float
+    {
+        return $this->overallScore;
+    }
+
+    public function setOverallScore(float $overallScore): void
+    {
+        $this->overallScore = $overallScore;
     }
 
     public function getGeneratedAt(): \DateTimeImmutable

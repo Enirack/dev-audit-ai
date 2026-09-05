@@ -15,6 +15,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Index(name: 'idx_finding_severity', fields: ['severity'])]
 #[ORM\Index(name: 'idx_finding_category', fields: ['category'])]
 #[ORM\Index(name: 'idx_finding_rule_id', fields: ['ruleId'])]
+#[ORM\Index(name: 'idx_finding_priority', fields: ['priority'])]
 class AuditFinding
 {
     #[ORM\Id]
@@ -57,6 +58,9 @@ class AuditFinding
     #[ORM\Column(nullable: true)]
     private ?float $confidence = null;
 
+    #[ORM\Column]
+    private int $priority;
+
     #[ORM\Column(length: 128)]
     private string $source;
 
@@ -75,6 +79,7 @@ class AuditFinding
         string $title,
         string $description,
         string $source,
+        int $priority,
     ) {
         $this->id = Uuid::v7();
         $this->audit = $audit;
@@ -84,6 +89,7 @@ class AuditFinding
         $this->title = $title;
         $this->description = $description;
         $this->source = $source;
+        $this->priority = $priority;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -175,6 +181,11 @@ class AuditFinding
     public function getSource(): string
     {
         return $this->source;
+    }
+
+    public function getPriority(): int
+    {
+        return $this->priority;
     }
 
     /** @return array<string, mixed>|null */

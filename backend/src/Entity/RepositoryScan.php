@@ -154,4 +154,10 @@ class RepositoryScan
     {
         $this->inventory = $inventory;
     }
+
+    /** @see attachInventory() — same Doctrine in-memory-sync caveat applies. */
+    public function attachAudit(Audit $audit): void
+    {
+        $this->audit = $audit;
+    }
 }

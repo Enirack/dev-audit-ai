@@ -17,6 +17,7 @@ final class RepositoryScanResponse
     public ?string $errorMessage;
     public string $createdAt;
     public ?RepositoryInventoryResponse $inventory;
+    public ?string $auditId;
 
     public static function fromEntity(RepositoryScan $scan): self
     {
@@ -32,6 +33,7 @@ final class RepositoryScanResponse
         $dto->inventory = null !== $scan->getInventory()
             ? RepositoryInventoryResponse::fromEntity($scan->getInventory())
             : null;
+        $dto->auditId = null !== $scan->getAudit() ? (string) $scan->getAudit()->getId() : null;
 
         return $dto;
     }
