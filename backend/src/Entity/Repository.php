@@ -13,6 +13,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: RepositoryRepository::class)]
 #[ORM\Table(name: 'repositories')]
+#[ORM\UniqueConstraint(name: 'uniq_repository_owner_url', fields: ['owner', 'url'])]
 class Repository
 {
     #[ORM\Id]

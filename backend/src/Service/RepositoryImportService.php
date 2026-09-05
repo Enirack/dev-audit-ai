@@ -8,32 +8,46 @@ use App\Dto\Request\CreateRepositoryRequest;
 use App\Entity\Enum\RepositoryProvider;
 use App\Entity\Repository;
 use App\Entity\User;
+use App\Exception\DuplicateRepositoryException;
+use App\Exception\GitHubRepositoryNotFoundException;
+use App\Repository\RepositoryRepository;
+use App\Service\GitHub\GitHubApiClient;
+use App\Service\GitHub\GitHubUrlParser;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class RepositoryImportService
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly RepositoryRepository $repositoryRepository,
+        private readonly GitHubUrlParser $urlParser,
+        private readonly GitHubApiClient $apiClient,
+    ) {
     }
 
+    /**
+     * @throws GitHubRepositoryNotFoundException if GitHub reports the repository as missing or private
+     * @throws \App\Exception\InvalidGitHubUrlException if the URL fails validation (should already be caught by the request DTO's validator)
+     * @throws DuplicateRepositoryException if this owner already imported this repository
+     */
     public function importFromGitHubUrl(User $owner, CreateRepositoryRequest $request): Repository
     {
-        $name = $this->extractNameFromUrl($request->url);
+        $reference = $this->urlParser->parse($request->url);
+        $canonicalUrl = $reference->canonicalUrl();
 
-        $repository = new Repository($owner, $name, rtrim($request->url, '/'), RepositoryProvider::GitHub);
-        $repository->setDescription($request->description);
+        if (null !== $this->repositoryRepository->findOneBy(['owner' => $owner, 'url' => $canonicalUrl])) {
+            throw new DuplicateRepositoryException('This repository has already been added.');
+        }
+
+        $info = $this->apiClient->getRepositoryInfo($reference);
+
+        $repository = new Repository($owner, $reference->fullName(), $canonicalUrl, RepositoryProvider::GitHub);
+        $repository->setDefaultBranch($info['defaultBranch']);
+        $repository->setDescription($request->description ?? $info['description']);
 
         $this->entityManager->persist($repository);
         $this->entityManager->flush();
 
         return $repository;
-    }
-
-    private function extractNameFromUrl(string $url): string
-    {
-        $path = trim((string) parse_url(rtrim($url, '/'), PHP_URL_PATH), '/');
-        $segments = explode('/', $path);
-
-        return implode('/', array_slice($segments, 0, 2));
     }
 }

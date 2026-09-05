@@ -7,6 +7,9 @@ namespace App\Controller\Api;
 use App\Dto\Request\CreateRepositoryRequest;
 use App\Dto\Response\RepositoryResponse;
 use App\Entity\User;
+use App\Exception\DuplicateRepositoryException;
+use App\Exception\GitHubApiException;
+use App\Exception\GitHubRepositoryNotFoundException;
 use App\Repository\RepositoryRepository;
 use App\Service\RepositoryImportService;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -49,7 +52,15 @@ final class RepositoryController
             return new JsonResponse(['errors' => (string) $violations], 422);
         }
 
-        $repository = $this->repositoryImportService->importFromGitHubUrl($user, $dto);
+        try {
+            $repository = $this->repositoryImportService->importFromGitHubUrl($user, $dto);
+        } catch (DuplicateRepositoryException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 409);
+        } catch (GitHubRepositoryNotFoundException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 422);
+        } catch (GitHubApiException) {
+            return new JsonResponse(['error' => 'Unable to reach GitHub. Please try again later.'], 503);
+        }
 
         return new JsonResponse(RepositoryResponse::fromEntity($repository), 201);
     }

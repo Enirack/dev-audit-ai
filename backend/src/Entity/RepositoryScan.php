@@ -77,10 +77,15 @@ class RepositoryScan
         return $this->status;
     }
 
-    public function markRunning(): void
+    public function markCloning(): void
     {
-        $this->status = ScanStatus::Running;
+        $this->status = ScanStatus::Cloning;
         $this->startedAt = new \DateTimeImmutable();
+    }
+
+    public function markScanning(): void
+    {
+        $this->status = ScanStatus::Scanning;
     }
 
     public function markCompleted(): void

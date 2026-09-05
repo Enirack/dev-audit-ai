@@ -35,6 +35,10 @@ services:
       APP_ENV: dev
       DATABASE_URL: "postgresql://devaudit:devaudit@postgres:5432/devaudit?serverVersion=16&charset=utf8"
       AI_ENGINE_BASE_URL: "http://ai-engine:8001"
+      GITHUB_TOKEN: "${GITHUB_TOKEN:-}"
+      INGESTION_MAX_ARCHIVE_BYTES: "104857600"
+      INGESTION_MAX_REPOSITORY_BYTES: "209715200"
+      INGESTION_TIMEOUT_SECONDS: "60"
       CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
     depends_on:
       postgres:
