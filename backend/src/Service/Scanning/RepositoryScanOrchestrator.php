@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Scanning;
 
+use App\Entity\RepositoryInventory;
 use App\Entity\RepositoryScan;
 use App\Exception\GitHubApiException;
 use App\Exception\GitHubRepositoryNotFoundException;
@@ -28,6 +29,7 @@ final class RepositoryScanOrchestrator
         private readonly GitHubUrlParser $urlParser,
         private readonly GitHubApiClient $apiClient,
         private readonly GitHubIngestionService $ingestionService,
+        private readonly RepositoryScanner $repositoryScanner,
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
     ) {
@@ -52,7 +54,20 @@ final class RepositoryScanOrchestrator
                 $scan->markScanning();
                 $this->entityManager->flush();
 
-                // Phase 3 will scan $workspace->root here and persist a RepositoryInventory.
+                $result = $this->repositoryScanner->scan($workspace->root);
+                $inventory = new RepositoryInventory(
+                    $scan,
+                    $result->totalFiles,
+                    $result->totalDirectories,
+                    $result->totalSizeBytes,
+                    $result->binaryFileCount,
+                    $result->ignoredFileCount,
+                    $result->languageStats,
+                    $result->extensionStats,
+                    $result->metadata,
+                );
+                $this->entityManager->persist($inventory);
+                $scan->attachInventory($inventory);
 
                 $scan->markCompleted();
             } finally {

@@ -16,6 +16,7 @@ final class RepositoryScanResponse
     public ?string $finishedAt;
     public ?string $errorMessage;
     public string $createdAt;
+    public ?RepositoryInventoryResponse $inventory;
 
     public static function fromEntity(RepositoryScan $scan): self
     {
@@ -28,6 +29,9 @@ final class RepositoryScanResponse
         $dto->finishedAt = $scan->getFinishedAt()?->format(DATE_ATOM);
         $dto->errorMessage = $scan->getErrorMessage();
         $dto->createdAt = $scan->getCreatedAt()->format(DATE_ATOM);
+        $dto->inventory = null !== $scan->getInventory()
+            ? RepositoryInventoryResponse::fromEntity($scan->getInventory())
+            : null;
 
         return $dto;
     }

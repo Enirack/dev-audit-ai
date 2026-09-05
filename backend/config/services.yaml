@@ -38,3 +38,11 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\Scanning\ScannerConfig:
+        arguments:
+            $ignoredDirectories: '%scanner.ignored_directories%'
+            $ignoredFilePatterns: '%scanner.ignored_file_patterns%'
+            $binaryExtensions: '%scanner.binary_extensions%'
+            $maxFileSizeBytes: '%scanner.max_file_size_bytes%'
+            $maxRepositorySizeBytes: '%scanner.max_repository_size_bytes%'
+            $maxFiles: '%scanner.max_files%'

@@ -48,6 +48,9 @@ class RepositoryScan
     #[ORM\OneToOne(targetEntity: Audit::class, mappedBy: 'repositoryScan', cascade: ['persist', 'remove'])]
     private ?Audit $audit = null;
 
+    #[ORM\OneToOne(targetEntity: RepositoryInventory::class, mappedBy: 'repositoryScan', cascade: ['persist', 'remove'])]
+    private ?RepositoryInventory $inventory = null;
+
     public function __construct(Repository $repository, ?User $triggeredBy = null)
     {
         $this->id = Uuid::v7();
@@ -134,5 +137,21 @@ class RepositoryScan
     public function getAudit(): ?Audit
     {
         return $this->audit;
+    }
+
+    public function getInventory(): ?RepositoryInventory
+    {
+        return $this->inventory;
+    }
+
+    /**
+     * Doctrine does not sync the inverse side of a one-to-one association in
+     * memory just because the owning side was constructed with a reference
+     * back to this entity — call this so the current request's in-memory
+     * object graph is consistent without needing a re-fetch.
+     */
+    public function attachInventory(RepositoryInventory $inventory): void
+    {
+        $this->inventory = $inventory;
     }
 }
