@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: devaudit
+      POSTGRES_PASSWORD: devaudit
+      POSTGRES_DB: devaudit
+    ports:
+      - "55432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devaudit -d devaudit"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ai-engine:
+    build: ./ai-engine
+    ports:
+      - "8001:8001"
+    environment:
+      AI_ENGINE_SERVICE_NAME: devaudit-ai-engine
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: dev
+      DATABASE_URL: "postgresql://devaudit:devaudit@postgres:5432/devaudit?serverVersion=16&charset=utf8"
+      AI_ENGINE_BASE_URL: "http://ai-engine:8001"
+      CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ai-engine:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://localhost:8000/api/health') === false ? 1 : 0);"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

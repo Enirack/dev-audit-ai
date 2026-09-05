@@ -1,0 +1,16 @@
+<main class="dashboard">
+  <h1>DevAudit AI</h1>
+  <p class="tagline">AI-powered codebase intelligence and technical auditing.</p>
+
+  @switch (state()) {
+    @case ('loading') {
+      <p class="status status--loading">Checking backend connectivity…</p>
+    }
+    @case ('ok') {
+      <p class="status status--ok">Backend status: {{ health()?.status }}</p>
+    }
+    @case ('error') {
+      <p class="status status--error">{{ errorMessage() }}</p>
+    }
+  }
+</main>
