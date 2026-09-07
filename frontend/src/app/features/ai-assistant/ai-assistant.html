@@ -1,0 +1,87 @@
+@switch (state()) {
+  @case ('loading') {
+    <div class="container">
+      <div class="skeleton" style="height: 400px"></div>
+    </div>
+  }
+
+  @case ('error') {
+    <div class="container">
+      <app-empty-state icon="⚠️" title="Couldn't load the AI assistant" variant="error" />
+    </div>
+  }
+
+  @case ('ok') {
+    <div class="container assistant-layout">
+      <div class="stack gap-2 assistant-header">
+        <a [routerLink]="['/audits', audit()!.id]" class="text-sm text-muted back-link">← Audit overview</a>
+        <h1>AI assistant</h1>
+        <p class="text-sm text-muted context-note">
+          🔒 Answers are grounded in the deterministic audit of <strong class="mono">{{ audit()!.repositoryName }}</strong> —
+          findings, scores, and repository metadata already computed by DevAudit AI. The assistant will say so if it
+          doesn't have enough context to answer.
+        </p>
+      </div>
+
+      <div class="chat card">
+        <div class="chat__messages">
+          @if (messages().length === 0) {
+            <div class="chat__empty">
+              <p class="text-sm text-muted">Ask a question about this repository's audit to get started.</p>
+              <div class="cluster gap-2">
+                @for (q of suggestedQuestions; track q) {
+                  <button type="button" class="btn btn--sm" (click)="askSuggested(q)">{{ q }}</button>
+                }
+              </div>
+            </div>
+          }
+
+          @for (message of messages(); track $index) {
+            <div class="chat-message" [class.chat-message--user]="message.role === 'user'">
+              <div class="chat-bubble">
+                <p class="text-sm">{{ message.content }}</p>
+                @if (message.referencedFiles?.length) {
+                  <div class="cluster gap-1 chips">
+                    @for (file of message.referencedFiles; track file) {
+                      <span class="badge chip mono">{{ file }}</span>
+                    }
+                  </div>
+                }
+                @if (message.insufficientContext) {
+                  <p class="text-sm insufficient-note">⚠ The audit didn't contain enough information to fully answer this.</p>
+                }
+              </div>
+            </div>
+          }
+
+          @if (asking()) {
+            <div class="chat-message">
+              <div class="chat-bubble chat-bubble--typing">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          }
+
+          <div #scrollAnchor></div>
+        </div>
+
+        @if (askError()) {
+          <p class="text-sm error-text ask-error">{{ askError() }}</p>
+        }
+
+        <form class="chat__composer" (ngSubmit)="ask()">
+          <input
+            class="input"
+            type="text"
+            placeholder="Ask about this repository's audit…"
+            [ngModel]="question()"
+            (ngModelChange)="question.set($event)"
+            name="question"
+            autocomplete="off"
+          />
+          <button type="submit" class="btn btn--primary" [disabled]="asking() || !question().trim()">Send</button>
+        </form>
+      </div>
+    </div>
+  }
+}

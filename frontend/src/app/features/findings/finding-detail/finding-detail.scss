@@ -1,0 +1,59 @@
+.back-link {
+  text-decoration: none;
+}
+
+h1 {
+  font-size: 1.3rem;
+}
+
+.category-badge {
+  background: var(--color-surface-raised);
+  color: var(--color-text-muted);
+  border-color: var(--color-border-strong);
+}
+
+.meta-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.meta-grid p {
+  margin-top: var(--space-1);
+}
+
+.ai-card {
+  border-color: color-mix(in srgb, var(--color-accent) 25%, var(--color-border));
+}
+
+.ai-label {
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ai-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  background: var(--color-accent-muted);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+}
+
+.ai-tag--recommendation {
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 14%, transparent);
+}
+
+.error-text {
+  color: var(--color-danger);
+}
+
+@media (max-width: 700px) {
+  .meta-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

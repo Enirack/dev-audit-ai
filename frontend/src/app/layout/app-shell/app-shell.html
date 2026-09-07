@@ -1,0 +1,41 @@
+<div class="shell">
+  <header class="shell__header">
+    <div class="container spread">
+      <a routerLink="/dashboard" class="brand">
+        <span class="brand__mark">DA</span>
+        <span class="brand__name">DevAudit AI</span>
+      </a>
+
+      <nav class="shell__nav" aria-label="Primary">
+        <a routerLink="/dashboard" class="shell__nav-link">Dashboard</a>
+      </nav>
+
+      <div class="shell__user">
+        @if (user(); as u) {
+          <button
+            type="button"
+            class="user-menu-trigger"
+            (click)="toggleMenu()"
+            [attr.aria-expanded]="menuOpen()"
+            aria-haspopup="true"
+          >
+            <span class="user-avatar">{{ u.email.charAt(0).toUpperCase() }}</span>
+            <span class="user-email text-sm">{{ u.email }}</span>
+          </button>
+
+          @if (menuOpen()) {
+            <div class="user-menu card" role="menu">
+              <button type="button" class="btn btn--ghost btn--sm btn--danger" role="menuitem" (click)="logout()">
+                Log out
+              </button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="shell__main">
+    <router-outlet />
+  </main>
+</div>

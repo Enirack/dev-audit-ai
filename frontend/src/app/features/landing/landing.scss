@@ -1,0 +1,119 @@
+.landing-header {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.landing-header .container {
+  height: 64px;
+  display: flex;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.brand__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.hero {
+  padding-block: var(--space-10) var(--space-8);
+  max-width: 760px;
+}
+
+.eyebrow {
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-3);
+}
+
+.hero h1 {
+  font-size: clamp(1.9rem, 4vw, 2.75rem);
+  line-height: 1.15;
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.01em;
+}
+
+.hero__lede {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  margin-bottom: var(--space-6);
+  max-width: 640px;
+}
+
+.how-it-works,
+.capabilities,
+.credibility {
+  padding-block: var(--space-8);
+  border-top: 1px solid var(--color-border);
+}
+
+.section-title {
+  margin-bottom: var(--space-5);
+}
+
+.steps-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.capabilities-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.step__index {
+  color: var(--color-text-faint);
+  font-size: 0.85rem;
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.step h3,
+.capability h3 {
+  font-size: 0.95rem;
+  margin-bottom: var(--space-2);
+}
+
+.credibility-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-left: 1.1rem;
+  max-width: 720px;
+}
+
+.credibility-list code {
+  color: var(--color-text);
+}
+
+.landing-footer {
+  padding-block: var(--space-6) var(--space-8);
+  border-top: 1px solid var(--color-border);
+}
+
+@media (max-width: 900px) {
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .capabilities-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+}

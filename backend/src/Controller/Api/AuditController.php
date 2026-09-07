@@ -49,6 +49,22 @@ final class AuditController
         return new JsonResponse(array_map(AuditScoreResponse::fromEntity(...), $audit->getScores()->toArray()));
     }
 
+    #[Route('/findings/{findingId}', name: 'api_audits_finding_show', methods: ['GET'])]
+    public function showFinding(string $id, string $findingId, #[CurrentUser] User $user): JsonResponse
+    {
+        $audit = $this->findOwnedAudit($id, $user);
+        if (null === $audit) {
+            return new JsonResponse(['error' => 'Audit not found.'], 404);
+        }
+
+        $finding = $this->auditFindingRepository->find($findingId);
+        if (null === $finding || $finding->getAudit()->getId()->toRfc4122() !== $audit->getId()->toRfc4122()) {
+            return new JsonResponse(['error' => 'Finding not found.'], 404);
+        }
+
+        return new JsonResponse(AuditFindingResponse::fromEntity($finding));
+    }
+
     #[Route('/findings', name: 'api_audits_findings', methods: ['GET'])]
     public function findings(string $id, Request $request, #[CurrentUser] User $user): JsonResponse
     {

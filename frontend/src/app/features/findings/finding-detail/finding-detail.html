@@ -1,0 +1,124 @@
+@switch (state()) {
+  @case ('loading') {
+    <div class="container stack gap-5">
+      <div class="skeleton" style="height: 40px"></div>
+      <div class="skeleton" style="height: 240px"></div>
+    </div>
+  }
+
+  @case ('not-found') {
+    <div class="container">
+      <app-empty-state icon="🔍" title="Finding not found">
+        <a [routerLink]="['/audits', auditId, 'findings']" class="btn btn--primary">Back to findings</a>
+      </app-empty-state>
+    </div>
+  }
+
+  @case ('error') {
+    <div class="container">
+      <app-empty-state icon="⚠️" title="Couldn't load this finding" variant="error" />
+    </div>
+  }
+
+  @case ('ok') {
+    @let f = finding()!;
+    <div class="container stack gap-6">
+      <div class="stack gap-2">
+        <a [routerLink]="['/audits', auditId, 'findings']" class="text-sm text-muted back-link">← All findings</a>
+        <div class="cluster gap-3">
+          <app-severity-badge [severity]="f.severity" />
+          <span class="badge category-badge">{{ categoryLabel(f.category) }}</span>
+        </div>
+        <h1>{{ f.title }}</h1>
+      </div>
+
+      <section class="card card--padded stack gap-4">
+        <div class="spread">
+          <p class="section-title">Deterministic analysis</p>
+          <span class="text-sm text-faint mono">{{ f.ruleId }}</span>
+        </div>
+
+        <div class="grid meta-grid">
+          <div>
+            <span class="text-sm text-muted">File</span>
+            <p class="mono text-sm">{{ f.filePath ?? 'repository-wide' }}{{ f.startLine ? ':' + f.startLine : '' }}</p>
+          </div>
+          <div>
+            <span class="text-sm text-muted">Confidence</span>
+            <p class="mono text-sm">{{ f.confidence !== null ? (f.confidence * 100).toFixed(0) + '%' : '—' }}</p>
+          </div>
+          <div>
+            <span class="text-sm text-muted">Priority</span>
+            <p class="mono text-sm">P{{ f.priority }}</p>
+          </div>
+          <div>
+            <span class="text-sm text-muted">Analyzer</span>
+            <p class="mono text-sm">{{ f.analyzer }}</p>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm text-muted" style="margin-bottom: var(--space-2)">Description</p>
+          <p class="text-sm">{{ f.description }}</p>
+        </div>
+
+        @if (f.recommendation) {
+          <div>
+            <p class="text-sm text-muted" style="margin-bottom: var(--space-2)">Recommendation</p>
+            <p class="text-sm">{{ f.recommendation }}</p>
+          </div>
+        }
+      </section>
+
+      <section class="card card--padded stack gap-4 ai-card">
+        <div class="spread">
+          <p class="section-title">AI explanation</p>
+          @if (explanationState() === 'ok') {
+            <button type="button" class="btn btn--sm btn--ghost" (click)="explainWithAi()">Regenerate</button>
+          }
+        </div>
+
+        @switch (explanationState()) {
+          @case ('idle') {
+            <div class="stack gap-3">
+              <p class="text-sm text-muted">
+                Ask the AI to explain this finding in plain language — why it matters, its potential impact, and how
+                to fix it.
+              </p>
+              <button type="button" class="btn btn--primary" style="align-self: flex-start" (click)="explainWithAi()">
+                Explain with AI
+              </button>
+            </div>
+          }
+          @case ('loading') {
+            <div class="skeleton" style="height: 100px"></div>
+          }
+          @case ('error') {
+            <p class="text-sm error-text">Unable to generate an explanation right now. Please try again.</p>
+          }
+          @case ('ok') {
+            @let e = explanation()!;
+            <div class="stack gap-4">
+              <div>
+                <p class="text-sm ai-label">Problem <span class="ai-tag">AI interpretation</span></p>
+                <p class="text-sm">{{ e.ai_interpretation.problem }}</p>
+              </div>
+              <div>
+                <p class="text-sm ai-label">Why it matters <span class="ai-tag">AI interpretation</span></p>
+                <p class="text-sm">{{ e.ai_interpretation.why_it_matters }}</p>
+              </div>
+              <div>
+                <p class="text-sm ai-label">Potential impact <span class="ai-tag">AI interpretation</span></p>
+                <p class="text-sm">{{ e.ai_interpretation.potential_impact }}</p>
+              </div>
+              <div>
+                <p class="text-sm ai-label">Suggested remediation <span class="ai-tag ai-tag--recommendation">AI recommendation</span></p>
+                <p class="text-sm">{{ e.ai_recommendation }}</p>
+              </div>
+            </div>
+          }
+        }
+      </section>
+    </div>
+  }
+}

@@ -11,6 +11,8 @@ final class AuditResponse
 {
     public string $id;
     public string $repositoryScanId;
+    public string $repositoryId;
+    public string $repositoryName;
     public ?string $summary;
     public ?float $overallScore;
     public string $generatedAt;
@@ -25,6 +27,8 @@ final class AuditResponse
         $dto = new self();
         $dto->id = (string) $audit->getId();
         $dto->repositoryScanId = (string) $audit->getRepositoryScan()->getId();
+        $dto->repositoryId = (string) $audit->getRepositoryScan()->getRepository()->getId();
+        $dto->repositoryName = $audit->getRepositoryScan()->getRepository()->getName();
         $dto->summary = $audit->getSummary();
         $dto->overallScore = $audit->getOverallScore();
         $dto->generatedAt = $audit->getGeneratedAt()->format(DATE_ATOM);

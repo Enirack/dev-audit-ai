@@ -1,0 +1,48 @@
+<div class="auth-page">
+  <div class="auth-card card card--padded">
+    <a routerLink="/" class="brand">
+      <span class="brand__mark">DA</span>
+      <span class="brand__name">DevAudit AI</span>
+    </a>
+
+    <h1>Log in</h1>
+    <p class="text-sm text-muted">Welcome back. Enter your credentials to continue.</p>
+
+    <form class="stack gap-4" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" class="input" type="email" formControlName="email" autocomplete="email" required />
+        @if (form.controls.email.invalid && form.controls.email.touched) {
+          <span class="field-error text-sm">Enter a valid email address.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          class="input"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          required
+        />
+        @if (form.controls.password.invalid && form.controls.password.touched) {
+          <span class="field-error text-sm">Password is required.</span>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <p class="form-error text-sm" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" class="btn btn--primary" [disabled]="submitting()">
+        {{ submitting() ? 'Logging in…' : 'Log in' }}
+      </button>
+    </form>
+
+    <p class="text-sm text-muted auth-switch">
+      Don't have an account? <a routerLink="/register">Create one</a>
+    </p>
+  </div>
+</div>

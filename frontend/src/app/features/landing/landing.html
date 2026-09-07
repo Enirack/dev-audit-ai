@@ -1,0 +1,67 @@
+<div class="landing">
+  <header class="landing-header">
+    <div class="container spread">
+      <div class="brand">
+        <span class="brand__mark">DA</span>
+        <span class="brand__name">DevAudit AI</span>
+      </div>
+      <nav class="cluster gap-3">
+        <a routerLink="/login" class="btn btn--ghost btn--sm">Log in</a>
+        <a routerLink="/register" class="btn btn--primary btn--sm">Get started</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero container">
+    <p class="eyebrow">AI-powered codebase intelligence and technical auditing</p>
+    <h1>Know exactly what's wrong with your codebase — and why it matters.</h1>
+    <p class="hero__lede">
+      DevAudit AI runs a deterministic static-analysis pipeline against any GitHub repository, scores it across
+      six categories, and layers an AI assistant on top that explains findings and answers questions —
+      grounded in your actual audit, never invented.
+    </p>
+    <div class="cluster gap-3">
+      <a routerLink="/register" class="btn btn--primary">Start an audit</a>
+      <a routerLink="/login" class="btn btn--ghost">I already have an account</a>
+    </div>
+  </section>
+
+  <section class="container how-it-works">
+    <p class="section-title">How it works</p>
+    <div class="grid steps-grid">
+      @for (step of steps; track step.title; let i = $index) {
+        <div class="step card card--padded">
+          <span class="step__index mono">{{ (i + 1).toString().padStart(2, '0') }}</span>
+          <h3>{{ step.title }}</h3>
+          <p class="text-sm text-muted">{{ step.description }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="container capabilities">
+    <p class="section-title">Key capabilities</p>
+    <div class="grid capabilities-grid">
+      @for (capability of capabilities; track capability.title) {
+        <div class="capability card card--padded">
+          <h3>{{ capability.title }}</h3>
+          <p class="text-sm text-muted">{{ capability.description }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="container credibility">
+    <p class="section-title">Technical credibility</p>
+    <ul class="credibility-list text-sm text-muted">
+      <li>Ingestion downloads a GitHub tarball and scans it for path traversal before extraction — no shell <code>git clone</code>, no command-injection surface.</li>
+      <li>Scoring uses a documented formula with diminishing returns per severity tier — the methodology is published, not a black box.</li>
+      <li>The AI layer never sees your secrets: values matching common credential patterns are redacted before any AI request.</li>
+      <li>Every AI response separates deterministic findings from AI interpretation and AI recommendation.</li>
+    </ul>
+  </section>
+
+  <footer class="landing-footer container text-sm text-faint">
+    <span>DevAudit AI</span>
+  </footer>
+</div>

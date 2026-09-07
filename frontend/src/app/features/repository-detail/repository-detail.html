@@ -1,0 +1,122 @@
+@switch (state()) {
+  @case ('loading') {
+    <div class="container stack gap-5">
+      <div class="skeleton" style="height: 80px"></div>
+      <div class="skeleton" style="height: 200px"></div>
+    </div>
+  }
+
+  @case ('not-found') {
+    <div class="container">
+      <app-empty-state icon="🔍" title="Repository not found" message="It may have been removed, or you don't have access to it.">
+        <a routerLink="/dashboard" class="btn btn--primary">Back to dashboard</a>
+      </app-empty-state>
+    </div>
+  }
+
+  @case ('error') {
+    <div class="container">
+      <app-empty-state icon="⚠️" title="Couldn't load this repository" variant="error">
+        <a routerLink="/dashboard" class="btn">Back to dashboard</a>
+      </app-empty-state>
+    </div>
+  }
+
+  @case ('ok') {
+    @let repo = repository()!;
+    <div class="container stack gap-6">
+      <div class="spread repo-header">
+        <div class="stack gap-2">
+          <a routerLink="/dashboard" class="text-sm text-muted back-link">← All repositories</a>
+          <h1 class="mono">{{ repo.name }}</h1>
+          @if (repo.description) {
+            <p class="text-sm text-muted">{{ repo.description }}</p>
+          }
+          <div class="cluster gap-3">
+            <a [href]="repo.url" target="_blank" rel="noopener" class="text-sm repo-link">{{ repo.url }}</a>
+            <span class="badge provider-badge">{{ repo.provider }}</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn--primary" (click)="startAudit()" [disabled]="starting()">
+          {{ starting() ? 'Running audit…' : '▶ Start audit' }}
+        </button>
+      </div>
+
+      @if (startError()) {
+        <p class="form-error text-sm" role="alert">{{ startError() }}</p>
+      }
+
+      @if (latestInventory(); as inventory) {
+        <div class="grid stats-grid">
+          <div class="card card--padded stat-card">
+            <span class="section-title">Files</span>
+            <span class="stat-card__value mono">{{ inventory.totalFiles }}</span>
+          </div>
+          <div class="card card--padded stat-card">
+            <span class="section-title">Directories</span>
+            <span class="stat-card__value mono">{{ inventory.totalDirectories }}</span>
+          </div>
+          <div class="card card--padded stat-card">
+            <span class="section-title">Size</span>
+            <span class="stat-card__value mono">{{ formatBytes(inventory.totalSizeBytes) }}</span>
+          </div>
+          <div class="card card--padded stat-card">
+            <span class="section-title">Binary files</span>
+            <span class="stat-card__value mono">{{ inventory.binaryFileCount }}</span>
+          </div>
+        </div>
+
+        <section class="stack gap-4">
+          <p class="section-title">Language distribution</p>
+          @if (languageRows().length === 0) {
+            <p class="text-sm text-muted">No recognized source languages were detected.</p>
+          } @else {
+            <div class="card card--padded">
+              <div class="lang-bar">
+                @for (row of languageRows(); track row.language; let i = $index) {
+                  <div class="lang-bar__segment" [style.width.%]="row.percent" [style.background]="languageColor(i)"></div>
+                }
+              </div>
+              <div class="lang-legend">
+                @for (row of languageRows(); track row.language; let i = $index) {
+                  <div class="cluster gap-2 lang-legend__item">
+                    <span class="lang-legend__dot" [style.background]="languageColor(i)"></span>
+                    <span class="text-sm">{{ row.language }}</span>
+                    <span class="text-sm text-faint">{{ row.percent.toFixed(0) }}%</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </section>
+      } @else {
+        <app-empty-state icon="🛰️" title="No audit yet" message="Start an audit to see language distribution and statistics." />
+      }
+
+      <section class="stack gap-4">
+        <p class="section-title">Audit history</p>
+        @if (scans().length === 0) {
+          <p class="text-sm text-muted">No scans have been run yet.</p>
+        } @else {
+          <div class="card">
+            @for (scan of scans(); track scan.id) {
+              <div class="scan-row">
+                <app-scan-status-badge [status]="scan.status" />
+                <span class="text-sm text-muted">{{ formatDateTime(scan.createdAt) }}</span>
+                <span class="text-sm text-faint mono">{{ scan.commitSha ? scan.commitSha.slice(0, 7) : '—' }}</span>
+                @if (scan.status === 'failed' && scan.errorMessage) {
+                  <span class="text-sm error-text">{{ scan.errorMessage }}</span>
+                } @else if (scan.auditId) {
+                  <a class="btn btn--sm" [routerLink]="['/audits', scan.auditId]">View audit</a>
+                } @else {
+                  <span class="text-sm text-faint">—</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  }
+}

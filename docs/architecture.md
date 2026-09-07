@@ -30,7 +30,8 @@ audits, findings, scores) and the public REST API consumed by the frontend. Talk
 
 The dashboard. A standalone-components Angular app (esbuild application builder) that
 consumes the backend's REST API. No business logic lives here beyond presentation and
-client-side validation.
+client-side validation. See [frontend.md](frontend.md) for the page structure, design
+system, auth flow, and known trade-offs.
 
 ### ai-engine (Python / FastAPI)
 

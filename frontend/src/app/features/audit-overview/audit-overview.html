@@ -1,0 +1,159 @@
+@switch (state()) {
+  @case ('loading') {
+    <div class="container stack gap-5">
+      <div class="skeleton" style="height: 60px"></div>
+      <div class="skeleton" style="height: 260px"></div>
+    </div>
+  }
+
+  @case ('not-found') {
+    <div class="container">
+      <app-empty-state icon="🔍" title="Audit not found">
+        <a routerLink="/dashboard" class="btn btn--primary">Back to dashboard</a>
+      </app-empty-state>
+    </div>
+  }
+
+  @case ('error') {
+    <div class="container">
+      <app-empty-state icon="⚠️" title="Couldn't load this audit" variant="error" />
+    </div>
+  }
+
+  @case ('ok') {
+    @let auditValue = audit()!;
+    <div class="container stack gap-6">
+      <div class="stack gap-2">
+        <a [routerLink]="['/repositories', auditValue.repositoryId]" class="text-sm text-muted back-link">
+          ← {{ auditValue.repositoryName }}
+        </a>
+        <div class="spread">
+          <div>
+            <h1>Audit overview</h1>
+            <p class="text-sm text-muted">Generated {{ formatDateTime(auditValue.generatedAt) }}</p>
+          </div>
+          <div class="cluster gap-3">
+            <a class="btn" [routerLink]="['/audits', auditValue.id, 'findings']">All findings</a>
+            <a class="btn btn--primary" [routerLink]="['/audits', auditValue.id, 'assistant']">🤖 Ask the AI assistant</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid overview-grid">
+        <div class="card card--padded score-card">
+          <app-score-gauge [value]="auditValue.overallScore" label="Overall score" />
+          <div class="severity-strip">
+            @for (severity of severityOrder; track severity) {
+              <a
+                class="severity-strip__item"
+                [routerLink]="['/audits', auditValue.id, 'findings']"
+                [queryParams]="{ severity }"
+              >
+                <app-severity-badge [severity]="severity" />
+                <span class="mono">{{ auditValue.severityDistribution[severity] }}</span>
+              </a>
+            }
+          </div>
+        </div>
+
+        <div class="card card--padded">
+          <p class="section-title" style="margin-bottom: var(--space-4)">Category scores</p>
+          <app-category-score-list [scores]="scores()" />
+        </div>
+      </div>
+
+      @if (statistics(); as stats) {
+        <section class="card card--padded stack gap-4">
+          <p class="section-title">Repository statistics</p>
+          <div class="grid stats-inline">
+            <div>
+              <span class="text-sm text-muted">Files analyzed</span>
+              <p class="mono stat-inline__value">{{ stats.fileCount }}</p>
+            </div>
+            <div>
+              <span class="text-sm text-muted">Total size</span>
+              <p class="mono stat-inline__value">{{ formatBytes(stats.totalSizeBytes) }}</p>
+            </div>
+            <div>
+              <span class="text-sm text-muted">Test directories</span>
+              <p class="mono stat-inline__value">{{ stats.testDirectories.length }}</p>
+            </div>
+            <div>
+              <span class="text-sm text-muted">Languages detected</span>
+              <p class="mono stat-inline__value">{{ (stats.languages | keyvalue)?.length ?? 0 }}</p>
+            </div>
+          </div>
+        </section>
+      }
+
+      <section class="card card--padded stack gap-4 ai-summary-card">
+        <div class="spread">
+          <p class="section-title">AI executive summary</p>
+          @if (summaryState() === 'ok') {
+            <button type="button" class="btn btn--sm btn--ghost" (click)="generateSummary()">Regenerate</button>
+          }
+        </div>
+
+        @switch (summaryState()) {
+          @case ('idle') {
+            <div class="stack gap-3 ai-summary-idle">
+              <p class="text-sm text-muted">
+                Generate an AI-written summary of this audit's strengths, weaknesses, and critical risks — grounded in
+                the deterministic findings above, never fabricated.
+              </p>
+              <button type="button" class="btn btn--primary" style="align-self: flex-start" (click)="generateSummary()">
+                Generate summary
+              </button>
+            </div>
+          }
+          @case ('loading') {
+            <div class="skeleton" style="height: 120px"></div>
+          }
+          @case ('error') {
+            <p class="text-sm error-text">Unable to generate a summary right now. Please try again.</p>
+          }
+          @case ('ok') {
+            @let s = summary()!;
+            <div class="grid summary-grid">
+              <div>
+                <p class="text-sm section-subtitle">Strengths</p>
+                <ul class="text-sm">
+                  @for (item of s.ai_interpretation.strengths; track item) {
+                    <li>{{ item }}</li>
+                  }
+                </ul>
+              </div>
+              <div>
+                <p class="text-sm section-subtitle">Weaknesses</p>
+                <ul class="text-sm">
+                  @for (item of s.ai_interpretation.weaknesses; track item) {
+                    <li>{{ item }}</li>
+                  }
+                </ul>
+              </div>
+              <div>
+                <p class="text-sm section-subtitle">Critical risks</p>
+                <ul class="text-sm">
+                  @for (item of s.ai_interpretation.critical_risks; track item) {
+                    <li>{{ item }}</li>
+                  }
+                </ul>
+              </div>
+              <div>
+                <p class="text-sm section-subtitle">Recommended next steps</p>
+                <ul class="text-sm">
+                  @for (item of s.ai_recommendation; track item) {
+                    <li>{{ item }}</li>
+                  }
+                </ul>
+              </div>
+            </div>
+            @if (s.context_truncated) {
+              <p class="text-sm text-faint">Note: not every finding fit in the AI's context window for this summary.</p>
+            }
+          }
+        }
+      </section>
+    </div>
+  }
+}

@@ -1,0 +1,90 @@
+<div class="container stack gap-5">
+  <div class="stack gap-2">
+    <a [routerLink]="['/audits', auditId]" class="text-sm text-muted back-link">← Audit overview</a>
+    <h1>Findings</h1>
+  </div>
+
+  <div class="card card--padded filters">
+    <div class="field">
+      <label for="search">Search by file path</label>
+      <input
+        id="search"
+        class="input"
+        type="text"
+        placeholder="e.g. src/config.php"
+        [value]="search()"
+        (input)="onSearchInput($any($event.target).value)"
+      />
+    </div>
+
+    <div class="field">
+      <label for="category">Category</label>
+      <select id="category" class="select" [value]="category()" (change)="setCategory($any($event.target).value)">
+        <option value="">All categories</option>
+        @for (c of categories; track c) {
+          <option [value]="c">{{ categoryLabel(c) }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="severity">Severity</label>
+      <select id="severity" class="select" [value]="severity()" (change)="setSeverity($any($event.target).value)">
+        <option value="">All severities</option>
+        @for (s of severities; track s) {
+          <option [value]="s">{{ s }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @switch (state()) {
+    @case ('loading') {
+      <div class="stack gap-2">
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="skeleton" style="height: 64px"></div>
+        }
+      </div>
+    }
+
+    @case ('error') {
+      <app-empty-state icon="⚠️" title="Couldn't load findings" variant="error" />
+    }
+
+    @case ('ok') {
+      @if (findings().length === 0) {
+        <app-empty-state icon="✓" title="No findings match these filters" message="Try widening your search or clearing filters." />
+      } @else {
+        <p class="text-sm text-muted">{{ total() }} finding{{ total() === 1 ? '' : 's' }}</p>
+
+        <div class="card findings-table">
+          @for (finding of findings(); track finding.id) {
+            <a class="finding-row" [routerLink]="['/audits', auditId, 'findings', finding.id]">
+              <app-severity-badge [severity]="finding.severity" />
+              <div class="finding-row__main">
+                <span class="finding-row__title">{{ finding.title }}</span>
+                <span class="text-sm text-faint mono">
+                  {{ finding.filePath ?? 'repository-wide' }}{{ finding.startLine ? ':' + finding.startLine : '' }}
+                </span>
+              </div>
+              <span class="badge category-badge">{{ categoryLabel(finding.category) }}</span>
+              <span class="text-sm text-muted mono priority">P{{ finding.priority }}</span>
+            </a>
+          }
+        </div>
+
+        @if (totalPages() > 1) {
+          <nav class="pagination cluster gap-2" aria-label="Findings pagination">
+            <button type="button" class="btn btn--sm" [disabled]="page() <= 1" (click)="goToPage(page() - 1)">
+              ← Previous
+            </button>
+            <span class="text-sm text-muted">Page {{ page() }} of {{ totalPages() }}</span>
+            <button type="button" class="btn btn--sm" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">
+              Next →
+            </button>
+          </nav>
+        }
+      }
+    }
+  }
+</div>

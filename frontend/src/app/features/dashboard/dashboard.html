@@ -1,16 +1,154 @@
-<main class="dashboard">
-  <h1>DevAudit AI</h1>
-  <p class="tagline">AI-powered codebase intelligence and technical auditing.</p>
+<div class="container stack gap-6">
+  <div class="spread">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="text-sm text-muted">Your repositories, audits, and health at a glance.</p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="toggleAddForm()">
+      {{ showAddForm() ? 'Cancel' : '+ Add repository' }}
+    </button>
+  </div>
+
+  @if (showAddForm()) {
+    <form class="card card--padded add-repo-form" [formGroup]="addForm" (ngSubmit)="submitAdd()" novalidate>
+      <div class="field">
+        <label for="repo-url">GitHub repository URL</label>
+        <input
+          id="repo-url"
+          class="input"
+          type="text"
+          formControlName="url"
+          placeholder="https://github.com/owner/repository"
+          autocomplete="off"
+        />
+        @if (addForm.controls.url.invalid && addForm.controls.url.touched) {
+          <span class="field-error text-sm">Enter a valid GitHub repository URL.</span>
+        }
+      </div>
+      @if (addError()) {
+        <p class="form-error text-sm" role="alert">{{ addError() }}</p>
+      }
+      <button type="submit" class="btn btn--primary" [disabled]="addSubmitting()">
+        {{ addSubmitting() ? 'Adding…' : 'Add repository' }}
+      </button>
+    </form>
+  }
 
   @switch (state()) {
     @case ('loading') {
-      <p class="status status--loading">Checking backend connectivity…</p>
+      <div class="grid stats-grid">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="skeleton" style="height: 96px"></div>
+        }
+      </div>
+      <div class="skeleton" style="height: 220px"></div>
     }
-    @case ('ok') {
-      <p class="status status--ok">Backend status: {{ health()?.status }}</p>
-    }
+
     @case ('error') {
-      <p class="status status--error">{{ errorMessage() }}</p>
+      <app-empty-state
+        icon="⚠️"
+        title="Couldn't load your dashboard"
+        message="Something went wrong while reaching the DevAudit AI backend."
+        variant="error"
+      />
+    }
+
+    @case ('ok') {
+      @if (repositoryCount() === 0) {
+        <app-empty-state icon="📦" title="No repositories yet" message="Add a public GitHub repository to run your first audit.">
+          <button type="button" class="btn btn--primary" (click)="toggleAddForm()">+ Add repository</button>
+        </app-empty-state>
+      } @else {
+        <div class="grid stats-grid">
+          <div class="card card--padded stat-card">
+            <span class="section-title">Repositories</span>
+            <span class="stat-card__value mono">{{ repositoryCount() }}</span>
+          </div>
+          <div class="card card--padded stat-card">
+            <span class="section-title">Average score</span>
+            <span class="stat-card__value mono">{{ averageScore() !== null ? averageScore()!.toFixed(0) : '—' }}</span>
+          </div>
+          <div class="card card--padded stat-card">
+            <span class="section-title">Repos with critical findings</span>
+            <span class="stat-card__value mono" [class.stat-card__value--danger]="criticalRows().length > 0">
+              {{ criticalRows().length }}
+            </span>
+          </div>
+        </div>
+
+        <section class="stack gap-4">
+          <p class="section-title">Repositories</p>
+          <div class="grid repo-grid">
+            @for (row of rows(); track row.repository.id) {
+              <a class="card card--padded card--interactive repo-card" [routerLink]="['/repositories', row.repository.id]">
+                <div class="spread">
+                  <div class="stack gap-1">
+                    <span class="repo-card__name mono">{{ row.repository.name }}</span>
+                    @if (row.repository.description) {
+                      <span class="text-sm text-muted repo-card__description">{{ row.repository.description }}</span>
+                    }
+                  </div>
+                  <app-score-gauge [value]="row.latestAudit?.overallScore ?? null" size="sm" />
+                </div>
+                <hr class="rule" />
+                <div class="spread">
+                  @if (row.latestScan) {
+                    <app-scan-status-badge [status]="row.latestScan.status" />
+                  } @else {
+                    <span class="text-sm text-faint">Never scanned</span>
+                  }
+                  @if (row.latestAudit && row.latestAudit.severityDistribution.critical > 0) {
+                    <span class="badge critical-count">{{ row.latestAudit.severityDistribution.critical }} critical</span>
+                  }
+                </div>
+              </a>
+            }
+          </div>
+        </section>
+
+        <div class="grid two-col">
+          <section class="stack gap-4">
+            <p class="section-title">Recent activity</p>
+            <div class="card">
+              @if (recentActivity().length === 0) {
+                <div class="card--padded">
+                  <p class="text-sm text-muted">No audits have completed yet.</p>
+                </div>
+              } @else {
+                @for (row of recentActivity(); track row.repository.id) {
+                  <a class="activity-row" [routerLink]="['/audits', row.latestAudit!.id]">
+                    <span class="mono text-sm">{{ row.repository.name }}</span>
+                    <span class="text-sm text-muted">scored {{ row.latestAudit!.overallScore?.toFixed(0) ?? '—' }}</span>
+                    <span class="text-sm text-faint">{{ relativeTime(row.latestAudit!.generatedAt) }}</span>
+                  </a>
+                }
+              }
+            </div>
+          </section>
+
+          <section class="stack gap-4">
+            <p class="section-title">Critical findings</p>
+            <div class="card">
+              @if (criticalRows().length === 0) {
+                <div class="card--padded">
+                  <p class="text-sm text-muted">No repository currently has critical findings. Nice.</p>
+                </div>
+              } @else {
+                @for (row of criticalRows(); track row.repository.id) {
+                  <a
+                    class="activity-row"
+                    [routerLink]="['/audits', row.latestAudit!.id, 'findings']"
+                    [queryParams]="{ severity: 'critical' }"
+                  >
+                    <span class="mono text-sm">{{ row.repository.name }}</span>
+                    <span class="badge critical-count">{{ row.latestAudit!.severityDistribution.critical }} critical</span>
+                  </a>
+                }
+              }
+            </div>
+          </section>
+        </div>
+      }
     }
   }
-</main>
+</div>
