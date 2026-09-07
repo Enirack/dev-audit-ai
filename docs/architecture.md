@@ -69,8 +69,11 @@ deterministic results, never used as a substitute for them.
 | `APP_SECRET` | backend | Symfony secret |
 | `CORS_ALLOW_ORIGIN` | backend | Allowed origins regex for the frontend |
 | `AI_ENGINE_BASE_URL` | backend | Base URL of the ai-engine service |
+| `AI_ENGINE_INTERNAL_SECRET` | backend, ai-engine | Shared secret for backend→ai-engine auth (see [ai.md](ai.md#security)); empty disables the check |
 | `JWT_SECRET_KEY` / `JWT_PUBLIC_KEY` / `JWT_PASSPHRASE` | backend | JWT signing keypair |
 | `AI_ENGINE_SERVICE_NAME` | ai-engine | Reported in `/health` |
+| `AI_ENGINE_PROVIDER` | ai-engine | `mock` (default) or `anthropic` — see [ai.md](ai.md#provider-abstraction) |
+| `ANTHROPIC_API_KEY` | ai-engine | Required only when `AI_ENGINE_PROVIDER=anthropic`; read only by ai-engine, never by the backend |
 | `apiUrl` (`environment.ts`) | frontend | Base URL of the backend API |
 
 ## Ports (local development)

@@ -21,6 +21,9 @@ services:
       - "8001:8001"
     environment:
       AI_ENGINE_SERVICE_NAME: devaudit-ai-engine
+      AI_ENGINE_PROVIDER: "${AI_ENGINE_PROVIDER:-mock}"
+      AI_ENGINE_ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      AI_ENGINE_INTERNAL_SECRET: "${AI_ENGINE_INTERNAL_SECRET:-}"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
       interval: 10s
@@ -35,6 +38,7 @@ services:
       APP_ENV: dev
       DATABASE_URL: "postgresql://devaudit:devaudit@postgres:5432/devaudit?serverVersion=16&charset=utf8"
       AI_ENGINE_BASE_URL: "http://ai-engine:8001"
+      AI_ENGINE_INTERNAL_SECRET: "${AI_ENGINE_INTERNAL_SECRET:-}"
       GITHUB_TOKEN: "${GITHUB_TOKEN:-}"
       INGESTION_MAX_ARCHIVE_BYTES: "104857600"
       INGESTION_MAX_REPOSITORY_BYTES: "209715200"

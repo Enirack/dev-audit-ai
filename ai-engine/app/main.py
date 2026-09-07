@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 
 from app.config import get_settings
+from app.routers.ai import router as ai_router
 
 app = FastAPI(title="DevAudit AI - Analysis Engine")
+app.include_router(ai_router)
 
 
 @app.get("/health")
