@@ -38,12 +38,23 @@ DATABASE_URL="postgresql://devaudit:devaudit@127.0.0.1:55432/devaudit?serverVers
   php -S 0.0.0.0:8000 -t public
 ```
 
-Run tests:
+Run tests and static analysis:
 
 ```bash
 cd backend
 composer install
-php bin/phpunit
+vendor/bin/phpstan analyse   # static analysis, level 5
+php bin/phpunit              # unit tests
+```
+
+Seed a demo account with a couple of real, already-audited public
+repositories (creates `demo@devaudit.local` / `DemoPassword123!`, safe to
+re-run):
+
+```bash
+docker compose exec backend php bin/console app:demo:seed
+# or, outside Docker:
+php bin/console app:demo:seed
 ```
 
 ### Known dependency caveat
@@ -63,9 +74,11 @@ removed once `doctrine/dbal ^4.5` reaches a stable release.
 ```bash
 cd frontend
 npm install
-npm start            # ng serve, http://localhost:4200
-npm run build        # production build
-npm test             # unit tests (vitest via `ng test`)
+npm start              # ng serve, http://localhost:4200
+npm run build          # production build
+npm test               # unit tests (vitest via `ng test`)
+npm run typecheck      # tsc --noEmit
+npm run format:check   # prettier --check (npm run format to auto-fix)
 ```
 
 ## AI Engine (outside Docker)

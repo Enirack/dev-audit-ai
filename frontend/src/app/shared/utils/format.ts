@@ -60,7 +60,11 @@ export function formatBytes(bytes: number): string {
 }
 
 export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  return new Date(iso).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 export function formatDateTime(iso: string): string {
@@ -73,7 +77,16 @@ export function formatDateTime(iso: string): string {
   });
 }
 
-const LANGUAGE_PALETTE = ['#7c6cf6', '#22d3ee', '#f97316', '#22c55e', '#eab308', '#ec4899', '#3b82f6', '#a3e635'];
+const LANGUAGE_PALETTE = [
+  '#7c6cf6',
+  '#22d3ee',
+  '#f97316',
+  '#22c55e',
+  '#eab308',
+  '#ec4899',
+  '#3b82f6',
+  '#a3e635',
+];
 
 export function languageColor(index: number): string {
   return LANGUAGE_PALETTE[index % LANGUAGE_PALETTE.length];

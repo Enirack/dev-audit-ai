@@ -119,7 +119,7 @@ final class AiPayloadBuilder
             return null;
         }
 
-        uasort($stats, static fn (array $a, array $b) => ($b['lines'] ?? 0) <=> ($a['lines'] ?? 0));
+        uasort($stats, static fn (array $a, array $b) => $b['lines'] <=> $a['lines']);
 
         return array_key_first($stats);
     }

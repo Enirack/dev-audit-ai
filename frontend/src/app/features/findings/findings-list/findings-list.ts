@@ -3,7 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { AuditService } from '../../../core/services/audit.service';
-import { AuditFinding, FindingCategory, FindingFilters, FindingSeverity } from '../../../core/models/finding.model';
+import {
+  AuditFinding,
+  FindingCategory,
+  FindingFilters,
+  FindingSeverity,
+} from '../../../core/models/finding.model';
 import { SeverityBadge } from '../../../shared/ui/severity-badge/severity-badge';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { categoryLabel } from '../../../shared/utils/format';

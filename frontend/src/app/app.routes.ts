@@ -33,7 +33,8 @@ export const routes: Routes = [
       },
       {
         path: 'audits/:id',
-        loadComponent: () => import('./features/audit-overview/audit-overview').then((m) => m.AuditOverview),
+        loadComponent: () =>
+          import('./features/audit-overview/audit-overview').then((m) => m.AuditOverview),
       },
       {
         path: 'audits/:id/findings',
@@ -47,7 +48,8 @@ export const routes: Routes = [
       },
       {
         path: 'audits/:id/assistant',
-        loadComponent: () => import('./features/ai-assistant/ai-assistant').then((m) => m.AiAssistant),
+        loadComponent: () =>
+          import('./features/ai-assistant/ai-assistant').then((m) => m.AiAssistant),
       },
     ],
   },

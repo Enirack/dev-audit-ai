@@ -99,6 +99,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->createdAt;
     }
 
+    /** @return Collection<int, Repository> */
+    public function getRepositories(): Collection
+    {
+        return $this->repositories;
+    }
+
     public function eraseCredentials(): void
     {
     }

@@ -20,7 +20,11 @@ const CATEGORY_ORDER: FindingCategory[] = [
         <div class="cat-row">
           <span class="cat-row__label text-sm">{{ categoryLabel(row.category) }}</span>
           <div class="cat-row__track">
-            <div class="cat-row__fill" [style.width.%]="row.score ?? 0" [style.background]="colorFor(row.score)"></div>
+            <div
+              class="cat-row__fill"
+              [style.width.%]="row.score ?? 0"
+              [style.background]="colorFor(row.score)"
+            ></div>
           </div>
           <span class="cat-row__score mono text-sm" [style.color]="colorFor(row.score)">
             {{ row.score !== null ? row.score.toFixed(0) : '—' }}
@@ -69,6 +73,9 @@ export class CategoryScoreList {
 
   protected readonly rows = computed(() => {
     const byCategory = new Map(this.scores().map((s) => [s.category, s.score]));
-    return CATEGORY_ORDER.map((category) => ({ category, score: byCategory.get(category) ?? null }));
+    return CATEGORY_ORDER.map((category) => ({
+      category,
+      score: byCategory.get(category) ?? null,
+    }));
   });
 }

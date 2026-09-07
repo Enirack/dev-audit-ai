@@ -38,7 +38,13 @@ export class AuditOverview {
   protected readonly summaryState = signal<SummaryState>('idle');
   protected readonly summary = signal<ExecutiveSummary | null>(null);
 
-  protected readonly severityOrder: FindingSeverity[] = ['critical', 'high', 'medium', 'low', 'info'];
+  protected readonly severityOrder: FindingSeverity[] = [
+    'critical',
+    'high',
+    'medium',
+    'low',
+    'info',
+  ];
 
   constructor() {
     this.load();
@@ -58,7 +64,8 @@ export class AuditOverview {
         this.statistics.set(statistics);
         this.state.set('ok');
       },
-      error: (error: HttpErrorResponse) => this.state.set(error.status === 404 ? 'not-found' : 'error'),
+      error: (error: HttpErrorResponse) =>
+        this.state.set(error.status === 404 ? 'not-found' : 'error'),
     });
   }
 

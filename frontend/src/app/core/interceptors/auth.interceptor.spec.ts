@@ -54,7 +54,9 @@ describe('authInterceptor', () => {
 
     http.get(`${environment.apiUrl}/repositories`).subscribe({ error: () => {} });
 
-    httpMock.expectOne(`${environment.apiUrl}/repositories`).flush({}, { status: 401, statusText: 'Unauthorized' });
+    httpMock
+      .expectOne(`${environment.apiUrl}/repositories`)
+      .flush({}, { status: 401, statusText: 'Unauthorized' });
 
     expect(localStorage.getItem('devaudit_token')).toBeNull();
     expect(navigateSpy).toHaveBeenCalledWith(['/login'], expect.any(Object));
@@ -65,7 +67,9 @@ describe('authInterceptor', () => {
 
     http.post(`${environment.apiUrl}/login`, {}).subscribe({ error: () => {} });
 
-    httpMock.expectOne(`${environment.apiUrl}/login`).flush({}, { status: 401, statusText: 'Unauthorized' });
+    httpMock
+      .expectOne(`${environment.apiUrl}/login`)
+      .flush({}, { status: 401, statusText: 'Unauthorized' });
 
     expect(navigateSpy).not.toHaveBeenCalled();
   });

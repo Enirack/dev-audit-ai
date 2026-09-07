@@ -41,7 +41,8 @@ export class FindingDetail {
         this.finding.set(finding);
         this.state.set('ok');
       },
-      error: (error: HttpErrorResponse) => this.state.set(error.status === 404 ? 'not-found' : 'error'),
+      error: (error: HttpErrorResponse) =>
+        this.state.set(error.status === 404 ? 'not-found' : 'error'),
     });
   }
 

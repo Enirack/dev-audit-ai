@@ -9,9 +9,11 @@ use App\Dto\Response\UserResponse;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -26,12 +28,18 @@ final class AuthController
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $entityManager,
+        #[Autowire(service: 'limiter.register')]
+        private readonly RateLimiterFactory $registerLimiter,
     ) {
     }
 
     #[Route('/register', name: 'api_register', methods: ['POST'])]
     public function register(Request $request): JsonResponse
     {
+        if (!$this->registerLimiter->create($request->getClientIp() ?? 'unknown')->consume()->isAccepted()) {
+            return new JsonResponse(['error' => 'Too many registration attempts. Please try again later.'], 429);
+        }
+
         /** @var RegisterUserRequest $dto */
         $dto = $this->serializer->deserialize($request->getContent(), RegisterUserRequest::class, 'json');
 

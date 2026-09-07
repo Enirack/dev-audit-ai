@@ -9,6 +9,7 @@ use App\Entity\Enum\RepositoryProvider;
 use App\Entity\Repository;
 use App\Entity\User;
 use App\Exception\DuplicateRepositoryException;
+use App\Exception\GitHubApiException;
 use App\Exception\GitHubRepositoryNotFoundException;
 use App\Repository\RepositoryRepository;
 use App\Service\GitHub\GitHubApiClient;
@@ -29,6 +30,7 @@ final class RepositoryImportService
      * @throws GitHubRepositoryNotFoundException if GitHub reports the repository as missing or private
      * @throws \App\Exception\InvalidGitHubUrlException if the URL fails validation (should already be caught by the request DTO's validator)
      * @throws DuplicateRepositoryException if this owner already imported this repository
+     * @throws GitHubApiException if GitHub is unreachable or returns an unexpected status
      */
     public function importFromGitHubUrl(User $owner, CreateRepositoryRequest $request): Repository
     {

@@ -32,18 +32,24 @@ export class Landing {
   ];
 
   protected readonly steps = [
-    { title: 'Connect a repository', description: 'Paste a GitHub URL. DevAudit AI securely ingests a snapshot of it.' },
+    {
+      title: 'Connect a repository',
+      description: 'Paste a GitHub URL. DevAudit AI securely ingests a snapshot of it.',
+    },
     {
       title: 'Automated audit',
-      description: 'The scanner and static-analysis engine run deterministic rules across every source file.',
+      description:
+        'The scanner and static-analysis engine run deterministic rules across every source file.',
     },
     {
       title: 'Review your score',
-      description: 'Get an overall score, six category breakdowns, and a prioritized list of findings.',
+      description:
+        'Get an overall score, six category breakdowns, and a prioritized list of findings.',
     },
     {
       title: 'Ask the AI assistant',
-      description: 'Get plain-language explanations, an executive summary, and a refactoring plan — grounded in your audit.',
+      description:
+        'Get plain-language explanations, an executive summary, and a refactoring plan — grounded in your audit.',
     },
   ];
 }

@@ -4,7 +4,12 @@ import { scoreColor } from '../../utils/format';
 @Component({
   selector: 'app-score-gauge',
   template: `
-    <div class="gauge" [class.gauge--sm]="size() === 'sm'" [style.--gauge-color]="color()" [style.--gauge-pct]="pct()">
+    <div
+      class="gauge"
+      [class.gauge--sm]="size() === 'sm'"
+      [style.--gauge-color]="color()"
+      [style.--gauge-pct]="pct()"
+    >
       <div class="gauge__ring">
         <div class="gauge__hole">
           @if (value() !== null) {
@@ -30,7 +35,10 @@ import { scoreColor } from '../../utils/format';
       width: 108px;
       height: 108px;
       border-radius: 50%;
-      background: conic-gradient(var(--gauge-color) calc(var(--gauge-pct) * 3.6deg), var(--color-border) 0deg);
+      background: conic-gradient(
+        var(--gauge-color) calc(var(--gauge-pct) * 3.6deg),
+        var(--color-border) 0deg
+      );
       display: flex;
       align-items: center;
       justify-content: center;

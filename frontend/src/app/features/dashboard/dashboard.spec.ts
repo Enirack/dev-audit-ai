@@ -35,11 +35,31 @@ describe('Dashboard', () => {
     fixture.detectChanges();
 
     httpMock.expectOne(`${environment.apiUrl}/repositories`).flush([
-      { id: 'r1', name: 'acme/widgets', url: 'https://github.com/acme/widgets', provider: 'github', defaultBranch: 'main', description: null, createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z' },
+      {
+        id: 'r1',
+        name: 'acme/widgets',
+        url: 'https://github.com/acme/widgets',
+        provider: 'github',
+        defaultBranch: 'main',
+        description: null,
+        createdAt: '2026-01-01T00:00:00Z',
+        updatedAt: '2026-01-01T00:00:00Z',
+      },
     ]);
 
     httpMock.expectOne(`${environment.apiUrl}/repositories/r1/scans`).flush([
-      { id: 's1', repositoryId: 'r1', status: 'completed', commitSha: 'abc123', startedAt: null, finishedAt: null, errorMessage: null, createdAt: '2026-01-02T00:00:00Z', inventory: null, auditId: 'a1' },
+      {
+        id: 's1',
+        repositoryId: 'r1',
+        status: 'completed',
+        commitSha: 'abc123',
+        startedAt: null,
+        finishedAt: null,
+        errorMessage: null,
+        createdAt: '2026-01-02T00:00:00Z',
+        inventory: null,
+        auditId: 'a1',
+      },
     ]);
 
     httpMock.expectOne(`${environment.apiUrl}/audits/a1`).flush({

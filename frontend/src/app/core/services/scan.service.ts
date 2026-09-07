@@ -14,7 +14,9 @@ export class ScanService {
   }
 
   get(repositoryId: string, scanId: string): Observable<RepositoryScan> {
-    return this.http.get<RepositoryScan>(`${this.baseUrl}/repositories/${repositoryId}/scans/${scanId}`);
+    return this.http.get<RepositoryScan>(
+      `${this.baseUrl}/repositories/${repositoryId}/scans/${scanId}`,
+    );
   }
 
   /** Blocks until ingestion + analysis finish — there is no queue in v1, see docs/development.md. */

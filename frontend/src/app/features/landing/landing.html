@@ -16,9 +16,9 @@
     <p class="eyebrow">AI-powered codebase intelligence and technical auditing</p>
     <h1>Know exactly what's wrong with your codebase — and why it matters.</h1>
     <p class="hero__lede">
-      DevAudit AI runs a deterministic static-analysis pipeline against any GitHub repository, scores it across
-      six categories, and layers an AI assistant on top that explains findings and answers questions —
-      grounded in your actual audit, never invented.
+      DevAudit AI runs a deterministic static-analysis pipeline against any GitHub repository,
+      scores it across six categories, and layers an AI assistant on top that explains findings and
+      answers questions — grounded in your actual audit, never invented.
     </p>
     <div class="cluster gap-3">
       <a routerLink="/register" class="btn btn--primary">Start an audit</a>
@@ -54,10 +54,22 @@
   <section class="container credibility">
     <p class="section-title">Technical credibility</p>
     <ul class="credibility-list text-sm text-muted">
-      <li>Ingestion downloads a GitHub tarball and scans it for path traversal before extraction — no shell <code>git clone</code>, no command-injection surface.</li>
-      <li>Scoring uses a documented formula with diminishing returns per severity tier — the methodology is published, not a black box.</li>
-      <li>The AI layer never sees your secrets: values matching common credential patterns are redacted before any AI request.</li>
-      <li>Every AI response separates deterministic findings from AI interpretation and AI recommendation.</li>
+      <li>
+        Ingestion downloads a GitHub tarball and scans it for path traversal before extraction — no
+        shell <code>git clone</code>, no command-injection surface.
+      </li>
+      <li>
+        Scoring uses a documented formula with diminishing returns per severity tier — the
+        methodology is published, not a black box.
+      </li>
+      <li>
+        The AI layer never sees your secrets: values matching common credential patterns are
+        redacted before any AI request.
+      </li>
+      <li>
+        Every AI response separates deterministic findings from AI interpretation and AI
+        recommendation.
+      </li>
     </ul>
   </section>
 

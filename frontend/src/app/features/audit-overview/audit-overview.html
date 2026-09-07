@@ -24,7 +24,10 @@
     @let auditValue = audit()!;
     <div class="container stack gap-6">
       <div class="stack gap-2">
-        <a [routerLink]="['/repositories', auditValue.repositoryId]" class="text-sm text-muted back-link">
+        <a
+          [routerLink]="['/repositories', auditValue.repositoryId]"
+          class="text-sm text-muted back-link"
+        >
           ← {{ auditValue.repositoryName }}
         </a>
         <div class="spread">
@@ -34,7 +37,9 @@
           </div>
           <div class="cluster gap-3">
             <a class="btn" [routerLink]="['/audits', auditValue.id, 'findings']">All findings</a>
-            <a class="btn btn--primary" [routerLink]="['/audits', auditValue.id, 'assistant']">🤖 Ask the AI assistant</a>
+            <a class="btn btn--primary" [routerLink]="['/audits', auditValue.id, 'assistant']"
+              >🤖 Ask the AI assistant</a
+            >
           </div>
         </div>
       </div>
@@ -90,7 +95,9 @@
         <div class="spread">
           <p class="section-title">AI executive summary</p>
           @if (summaryState() === 'ok') {
-            <button type="button" class="btn btn--sm btn--ghost" (click)="generateSummary()">Regenerate</button>
+            <button type="button" class="btn btn--sm btn--ghost" (click)="generateSummary()">
+              Regenerate
+            </button>
           }
         </div>
 
@@ -98,10 +105,15 @@
           @case ('idle') {
             <div class="stack gap-3 ai-summary-idle">
               <p class="text-sm text-muted">
-                Generate an AI-written summary of this audit's strengths, weaknesses, and critical risks — grounded in
-                the deterministic findings above, never fabricated.
+                Generate an AI-written summary of this audit's strengths, weaknesses, and critical
+                risks — grounded in the deterministic findings above, never fabricated.
               </p>
-              <button type="button" class="btn btn--primary" style="align-self: flex-start" (click)="generateSummary()">
+              <button
+                type="button"
+                class="btn btn--primary"
+                style="align-self: flex-start"
+                (click)="generateSummary()"
+              >
                 Generate summary
               </button>
             </div>
@@ -110,7 +122,9 @@
             <div class="skeleton" style="height: 120px"></div>
           }
           @case ('error') {
-            <p class="text-sm error-text">Unable to generate a summary right now. Please try again.</p>
+            <p class="text-sm error-text">
+              Unable to generate a summary right now. Please try again.
+            </p>
           }
           @case ('ok') {
             @let s = summary()!;
@@ -149,7 +163,9 @@
               </div>
             </div>
             @if (s.context_truncated) {
-              <p class="text-sm text-faint">Note: not every finding fit in the AI's context window for this summary.</p>
+              <p class="text-sm text-faint">
+                Note: not every finding fit in the AI's context window for this summary.
+              </p>
             }
           }
         }

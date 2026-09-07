@@ -1,12 +1,7 @@
 export type FindingSeverity = 'info' | 'low' | 'medium' | 'high' | 'critical';
 
 export type FindingCategory =
-  | 'security'
-  | 'architecture'
-  | 'maintainability'
-  | 'performance'
-  | 'testing'
-  | 'code_quality';
+  'security' | 'architecture' | 'maintainability' | 'performance' | 'testing' | 'code_quality';
 
 export interface AuditFinding {
   id: string;

@@ -27,6 +27,9 @@ final class GitHubApiClient
 
     /**
      * @return array{defaultBranch: string, description: ?string, private: bool}
+     *
+     * @throws GitHubRepositoryNotFoundException if the repository is missing or private
+     * @throws GitHubApiException if GitHub is unreachable or returns an unexpected status
      */
     public function getRepositoryInfo(GitHubRepositoryReference $reference): array
     {

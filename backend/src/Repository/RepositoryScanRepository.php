@@ -19,9 +19,22 @@ class RepositoryScanRepository extends ServiceEntityRepository
         parent::__construct($registry, RepositoryScan::class);
     }
 
-    /** @return RepositoryScan[] */
+    /**
+     * Fetch-joins audit/inventory rather than relying on findBy(), since
+     * RepositoryScanResponse::fromEntity() accesses both for every scan —
+     * without the join, each row triggers two extra lazy-load queries.
+     *
+     * @return RepositoryScan[]
+     */
     public function findByRepository(RepositoryEntity $repository): array
     {
-        return $this->findBy(['repository' => $repository], ['createdAt' => 'DESC']);
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.audit', 'a')->addSelect('a')
+            ->leftJoin('s.inventory', 'i')->addSelect('i')
+            ->andWhere('s.repository = :repository')
+            ->setParameter('repository', $repository->getId())
+            ->orderBy('s.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

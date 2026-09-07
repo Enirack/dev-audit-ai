@@ -16,7 +16,9 @@ describe('authGuard / guestGuard', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   function runAuthGuard() {
-    return TestBed.runInInjectionContext(() => authGuard({} as never, { url: '/dashboard' } as never));
+    return TestBed.runInInjectionContext(() =>
+      authGuard({} as never, { url: '/dashboard' } as never),
+    );
   }
 
   function runGuestGuard() {

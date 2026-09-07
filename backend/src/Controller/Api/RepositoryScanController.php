@@ -12,7 +12,9 @@ use App\Repository\RepositoryRepository;
 use App\Repository\RepositoryScanRepository;
 use App\Service\Scanning\RepositoryScanOrchestrator;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
@@ -24,6 +26,8 @@ final class RepositoryScanController
         private readonly RepositoryScanRepository $scanRepository,
         private readonly RepositoryScanOrchestrator $orchestrator,
         private readonly EntityManagerInterface $entityManager,
+        #[Autowire(service: 'limiter.repository_scan')]
+        private readonly RateLimiterFactory $scanLimiter,
     ) {
     }
 
@@ -49,6 +53,10 @@ final class RepositoryScanController
         $repository = $this->findOwnedRepository($repositoryId, $user);
         if (null === $repository) {
             return new JsonResponse(['error' => 'Repository not found.'], 404);
+        }
+
+        if (!$this->scanLimiter->create($user->getId()->toRfc4122())->consume()->isAccepted()) {
+            return new JsonResponse(['error' => 'Too many audits started recently. Please wait before starting another.'], 429);
         }
 
         $scan = new RepositoryScan($repository, $user);

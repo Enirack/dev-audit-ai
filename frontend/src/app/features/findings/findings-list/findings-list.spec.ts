@@ -61,7 +61,8 @@ describe('FindingsList', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (r) => r.url === `${environment.apiUrl}/audits/audit-1/findings` && r.params.get('page') === '1',
+      (r) =>
+        r.url === `${environment.apiUrl}/audits/audit-1/findings` && r.params.get('page') === '1',
     );
     req.flush({ ...EMPTY_PAGE, data: [makeFinding('f1')], total: 1, totalPages: 1 });
     fixture.detectChanges();
@@ -73,21 +74,29 @@ describe('FindingsList', () => {
     fixture = TestBed.createComponent(FindingsList);
     fixture.detectChanges();
 
-    httpMock.expectOne((r) => r.url === `${environment.apiUrl}/audits/audit-1/findings`).flush(EMPTY_PAGE);
+    httpMock
+      .expectOne((r) => r.url === `${environment.apiUrl}/audits/audit-1/findings`)
+      .flush(EMPTY_PAGE);
     fixture.detectChanges();
 
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('No findings match these filters');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain(
+      'No findings match these filters',
+    );
   });
 
   it('refetches with the category filter when the category select changes', () => {
     fixture = TestBed.createComponent(FindingsList);
     fixture.detectChanges();
-    httpMock.expectOne((r) => r.url === `${environment.apiUrl}/audits/audit-1/findings`).flush(EMPTY_PAGE);
+    httpMock
+      .expectOne((r) => r.url === `${environment.apiUrl}/audits/audit-1/findings`)
+      .flush(EMPTY_PAGE);
 
     fixture.componentInstance.setCategory('architecture');
 
     const req = httpMock.expectOne(
-      (r) => r.url === `${environment.apiUrl}/audits/audit-1/findings` && r.params.get('category') === 'architecture',
+      (r) =>
+        r.url === `${environment.apiUrl}/audits/audit-1/findings` &&
+        r.params.get('category') === 'architecture',
     );
     req.flush(EMPTY_PAGE);
     fixture.detectChanges();
@@ -107,7 +116,8 @@ describe('FindingsList', () => {
     fixture.componentInstance.goToPage(2);
 
     const req = httpMock.expectOne(
-      (r) => r.url === `${environment.apiUrl}/audits/audit-1/findings` && r.params.get('page') === '2',
+      (r) =>
+        r.url === `${environment.apiUrl}/audits/audit-1/findings` && r.params.get('page') === '2',
     );
     req.flush({ ...EMPTY_PAGE, data: [makeFinding('f2')], total: 30, totalPages: 2, page: 2 });
     fixture.detectChanges();

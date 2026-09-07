@@ -7,7 +7,12 @@ import { Repository } from '../../core/models/repository.model';
 import { RepositoryScan } from '../../core/models/scan.model';
 import { ScanStatusBadge } from '../../shared/ui/scan-status-badge/scan-status-badge';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
-import { formatBytes, formatDateTime, languageColor, relativeTime } from '../../shared/utils/format';
+import {
+  formatBytes,
+  formatDateTime,
+  languageColor,
+  relativeTime,
+} from '../../shared/utils/format';
 
 type LoadState = 'loading' | 'ok' | 'error' | 'not-found';
 
@@ -37,7 +42,11 @@ export class RepositoryDetail {
     const stats = this.latestInventory()?.languageStats ?? {};
     const totalLines = Object.values(stats).reduce((sum, s) => sum + s.lines, 0);
     return Object.entries(stats)
-      .map(([language, s]) => ({ language, ...s, percent: totalLines > 0 ? (s.lines / totalLines) * 100 : 0 }))
+      .map(([language, s]) => ({
+        language,
+        ...s,
+        percent: totalLines > 0 ? (s.lines / totalLines) * 100 : 0,
+      }))
       .sort((a, b) => b.lines - a.lines);
   });
 
@@ -59,7 +68,8 @@ export class RepositoryDetail {
           error: () => this.state.set('error'),
         });
       },
-      error: (error: HttpErrorResponse) => this.state.set(error.status === 404 ? 'not-found' : 'error'),
+      error: (error: HttpErrorResponse) =>
+        this.state.set(error.status === 404 ? 'not-found' : 'error'),
     });
   }
 

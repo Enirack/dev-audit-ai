@@ -1,0 +1,14 @@
+framework:
+    rate_limiter:
+        # Registration abuse (account creation spam). Keyed by client IP in AuthController.
+        register:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '1 hour'
+        # Repository scans are expensive: a GitHub API round-trip plus a full
+        # tarball download, extraction, and static-analysis pass. Keyed by
+        # authenticated user in RepositoryScanController.
+        repository_scan:
+            policy: 'sliding_window'
+            limit: 10
+            interval: '1 hour'

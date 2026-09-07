@@ -13,14 +13,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = auth.token();
 
   const authorizedReq =
-    isApiRequest && token
-      ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-      : req;
+    isApiRequest && token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 
   return next(authorizedReq).pipe(
     catchError((error: unknown) => {
       const isAuthEndpoint = req.url.endsWith('/login') || req.url.endsWith('/register');
-      if (isApiRequest && !isAuthEndpoint && error instanceof HttpErrorResponse && error.status === 401) {
+      if (
+        isApiRequest &&
+        !isAuthEndpoint &&
+        error instanceof HttpErrorResponse &&
+        error.status === 401
+      ) {
         auth.logout();
         router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
       }

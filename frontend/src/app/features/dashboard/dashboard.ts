@@ -42,19 +42,30 @@ export class Dashboard {
   protected readonly addError = signal<string | null>(null);
 
   protected readonly addForm = this.fb.nonNullable.group({
-    url: ['', [Validators.required, Validators.pattern(/^https:\/\/github\.com\/[^/]+\/[^/]+\/?$/)]],
+    url: [
+      '',
+      [Validators.required, Validators.pattern(/^https:\/\/github\.com\/[^/]+\/[^/]+\/?$/)],
+    ],
   });
 
   protected readonly repositoryCount = () => this.rows().length;
   protected readonly criticalRows = () =>
     this.rows()
       .filter((row) => (row.latestAudit?.severityDistribution.critical ?? 0) > 0)
-      .sort((a, b) => (b.latestAudit!.severityDistribution.critical) - (a.latestAudit!.severityDistribution.critical));
+      .sort(
+        (a, b) =>
+          b.latestAudit!.severityDistribution.critical -
+          a.latestAudit!.severityDistribution.critical,
+      );
 
   protected readonly recentActivity = () =>
     this.rows()
       .filter((row) => row.latestAudit !== null)
-      .sort((a, b) => new Date(b.latestAudit!.generatedAt).getTime() - new Date(a.latestAudit!.generatedAt).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.latestAudit!.generatedAt).getTime() -
+          new Date(a.latestAudit!.generatedAt).getTime(),
+      )
       .slice(0, 6);
 
   protected readonly averageScore = () => {
@@ -127,7 +138,9 @@ export class Dashboard {
         if (error.status === 409) {
           this.addError.set(serverMessage ?? 'You have already added this repository.');
         } else if (error.status === 422) {
-          this.addError.set(serverMessage ?? 'That does not look like a valid GitHub repository URL.');
+          this.addError.set(
+            serverMessage ?? 'That does not look like a valid GitHub repository URL.',
+          );
         } else if (error.status === 503) {
           this.addError.set('Unable to reach GitHub right now. Please try again shortly.');
         } else {

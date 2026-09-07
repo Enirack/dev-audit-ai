@@ -16,7 +16,11 @@ export class AiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiUrl;
 
-  explainFinding(auditId: string, findingId: string, refresh = false): Observable<FindingExplanation> {
+  explainFinding(
+    auditId: string,
+    findingId: string,
+    refresh = false,
+  ): Observable<FindingExplanation> {
     return this.http.post<FindingExplanation>(
       `${this.baseUrl}/audits/${auditId}/ai/findings/${findingId}/explain${refresh ? '?refresh=true' : ''}`,
       {},

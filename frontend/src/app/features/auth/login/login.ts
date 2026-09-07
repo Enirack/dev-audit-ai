@@ -42,7 +42,9 @@ export class Login {
       error: (error: HttpErrorResponse) => {
         this.submitting.set(false);
         this.errorMessage.set(
-          error.status === 401 ? 'Incorrect email or password.' : 'Unable to log in right now. Please try again.',
+          error.status === 401
+            ? 'Incorrect email or password.'
+            : 'Unable to log in right now. Please try again.',
         );
       },
     });
