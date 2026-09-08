@@ -9,4 +9,6 @@ COPY app ./app
 
 EXPOSE 8001
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+# Render (and most PaaS) assign the listen port dynamically via $PORT;
+# defaults to 8001 to match docker-compose for local development.
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8001}"]

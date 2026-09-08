@@ -208,6 +208,11 @@ network call.
 
 ## Deployment
 
+A live, **free** deployment recipe (Neon + Render + Vercel, no credit card
+anywhere) is documented step by step in
+[docs/deployment-free.md](docs/deployment-free.md), including a
+`render.yaml` Blueprint at the repo root.
+
 `docker-compose.yml` as committed is a **local development** configuration
 (`APP_ENV=dev`, permissive CORS, no internal secret set). Before deploying
 anywhere real:

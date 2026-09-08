@@ -11,7 +11,8 @@ WORKDIR /app
 COPY . .
 
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+RUN chmod +x docker-entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "php bin/console doctrine:migrations:migrate --no-interaction && php -S 0.0.0.0:8000 -t public"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
